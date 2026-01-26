@@ -71,6 +71,11 @@ const Modal = ({ id, nick }: ModalProps) => {
               register={register}
               onChange={handleAmountChange}
               errorMsg={error || ''}
+              rules={{
+                required: 'Podaj kwotę',
+                min: { value: 0.01, message: 'Minimum 0.01' },
+                max: { value: 1000, message: 'Maksimum 1000' }
+              }}
             />
             <div className="modal-action">
               <button

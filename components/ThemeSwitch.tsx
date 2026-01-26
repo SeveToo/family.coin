@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 
 const ThemeSwitch = () => {
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('dark'); // Domyślny motyw ustawiony na 'dark'
 
   useEffect(() => {
-    // Check local storage or system preference on mount
+    // Sprawdź local storage przy ładowaniu komponentu, lub użyj domyślnego 'dark'
     const savedTheme = localStorage.getItem('theme') || 'dark';
     setTheme(savedTheme);
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -21,14 +21,14 @@ const ThemeSwitch = () => {
 
   return (
     <label className="swap swap-rotate btn btn-ghost btn-circle">
-      {/* this hidden checkbox controls the state */}
+      {/* Ten ukryty checkbox kontroluje stan */}
       <input 
         type="checkbox" 
-        checked={theme === 'light'}
+        checked={theme === 'light'} // Checked, gdy motyw jest 'light'
         onChange={toggleTheme}
       />
 
-      {/* sun icon - shown when checked (light mode) */}
+      {/* Ikona słońca - wyświetlana, gdy checked (motyw jasny) */}
       <svg
         className="swap-on fill-current w-6 h-6"
         xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +36,7 @@ const ThemeSwitch = () => {
         <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,5.64,7.05Zm12,1.41a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,17.65,8.46Zm1.75,8.13a1,1,0,0,0-.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,19.4,16.59ZM12,19a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19Zm7-8H19a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,3a3,3,0,1,1,3-3A3,3,0,0,1,10,14Z" />
       </svg>
 
-      {/* moon icon - shown when unchecked (dark mode) */}
+      {/* Ikona księżyca - wyświetlana, gdy unchecked (motyw ciemny) */}
       <svg
         className="swap-off fill-current w-6 h-6"
         xmlns="http://www.w3.org/2000/svg"
