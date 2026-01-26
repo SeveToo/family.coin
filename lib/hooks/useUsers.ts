@@ -1,4 +1,4 @@
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { useState, useEffect } from 'react';
 
@@ -11,21 +11,18 @@ const useUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const querySnapshot = await getDocs(collection(db, 'users'));
+    const unsubscribe = onSnapshot(collection(db, 'users'), (querySnapshot) => {
       const fetchedUsers: User[] = [];
-
       querySnapshot.forEach((doc) => {
         fetchedUsers.push({
           id: doc.id,
           data: doc.data(),
         });
       });
-
       setUsers(fetchedUsers);
-    };
+    });
 
-    fetchUsers();
+    return () => unsubscribe();
   }, []);
 
   return users;
