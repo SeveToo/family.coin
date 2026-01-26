@@ -1,5 +1,6 @@
 import React from 'react';
 import Modal from './Modal';
+import { formatBalance } from '@/lib/utils';
 
 interface UserProps {
   nick?: string;
@@ -15,7 +16,7 @@ const User = ({ nick = 'Nazwa', firstname = 'Imię', balance = 0, id }: UserPro
         <div className="text-primary font-bold truncate max-w-[100px]">{firstname}</div>
         <div className="truncate flex-1 min-w-0">{nick}</div>
         <div className="whitespace-nowrap shrink-0">
-          <span className="text-primary font-bold">{balance}</span>Æ
+          <span className="text-primary font-bold">{formatBalance(balance)}</span>Æ
         </div>
       </div>
       <div className="shrink-0 ml-2">

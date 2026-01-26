@@ -5,6 +5,7 @@ import InputGroup from './InputGroup';
 import useCoinTransfer from '@/lib/hooks/useCoinTransfer';
 import useUserBalance from '@/lib/hooks/useUserBalance';
 import { useForm } from 'react-hook-form';
+import { formatBalance } from '@/lib/utils';
 
 interface ModalProps {
   id: string;
@@ -57,7 +58,7 @@ const Modal = ({ id, nick }: ModalProps) => {
           <h3 className="font-bold text-lg">Przelew</h3>
           <p className="py-1">
             Obecnie Posiadasz:{' '}
-            <span className="font-bold text-primary">{userBalance}</span>
+            <span className="font-bold text-primary">{formatBalance(userBalance)}</span>
           </p>
           <p className="py-1">
             Odbiorca: <span className="font-bold text-primary">{nick}</span>

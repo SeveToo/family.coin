@@ -5,6 +5,7 @@ import useUsers from '@/lib/hooks/useUsers';
 import { db } from '@/lib/firebase/config';
 import { doc, updateDoc, writeBatch } from 'firebase/firestore';
 import { useState } from 'react';
+import { formatBalance } from '@/lib/utils';
 
 export default function AdminPage() {
   const users = useUsers(); // This hook updates automatically? No, useUsers currently fetches once on mount. 
@@ -103,7 +104,7 @@ export default function AdminPage() {
                     <div className="text-sm opacity-50">{user.data.email}</div>
                     <div className="text-xs">{user.id}</div>
                   </td>
-                  <td>{user.data.balance}</td>
+                  <td>{formatBalance(user.data.balance)}</td>
                   <td>
                     {user.data.isApproved ? (
                       <span className="badge badge-success">Zatwierdzony</span>

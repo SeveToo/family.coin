@@ -15,7 +15,8 @@ const useCoinTransfer = () => {
     }
 
     try {
-      const numericAmount = Number(amount); // Konwersja na liczbę
+      // Round to 2 decimal places to prevent floating point errors
+      const numericAmount = Math.round(Number(amount) * 100) / 100;
 
       if (isNaN(numericAmount) || numericAmount <= 0) {
         setError('Podano niepoprawną ilość monet');

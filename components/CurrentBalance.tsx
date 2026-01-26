@@ -1,6 +1,7 @@
 'use client';
 
 import useUserBalance from '@/lib/hooks/useUserBalance';
+import { formatBalance } from '@/lib/utils';
 
 const CurrentBalance = () => {
   const userBalance = useUserBalance();
@@ -10,7 +11,7 @@ const CurrentBalance = () => {
       <div className="stat">
         <div className="stat-title opacity-70">Obecnie posiadasz:</div>
         <div className="stat-value">
-          {userBalance}
+          {formatBalance(userBalance)}
           <span className="mx-2 text-lg font-medium opacity-80">
             Family coiny 👑
           </span>
