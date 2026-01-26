@@ -3,20 +3,24 @@
 import { useEffect, useState } from 'react';
 
 const ThemeSwitch = () => {
-  const [theme, setTheme] = useState('dark'); // Domyślny motyw ustawiony na 'dark'
+  const [theme, setTheme] = useState(() => {
+    // Sprawdź local storage przy ładowaniu komponentu, lub użyj domyślnego 'dark'
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') || 'dark';
+    }
+    return 'dark';
+  });
 
   useEffect(() => {
-    // Sprawdź local storage przy ładowaniu komponentu, lub użyj domyślnego 'dark'
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    setTheme(savedTheme);
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  }, []);
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', newTheme);
+    }
   };
 
   return (

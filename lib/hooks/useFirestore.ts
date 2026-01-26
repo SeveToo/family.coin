@@ -15,7 +15,7 @@ import { useAuth } from '@/lib/contexts/AuthContext';
 // Specific components can extend this or cast the result.
 interface FirestoreDoc {
   id: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 const useFirestore = (collectionName: string) => {
@@ -28,29 +28,23 @@ const useFirestore = (collectionName: string) => {
   useEffect(() => {
     if (!user?.uid || !collectionName) return;
 
-    try {
-      setIsLoading(true);
-      const q = query(
-        collection(db, collectionName),
-        where('uid', '==', user.uid),
-        orderBy('createdAt', 'desc')
-      );
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const docs: FirestoreDoc[] = [];
-        querySnapshot.forEach((doc) => {
-          docs.push({ ...doc.data(), id: doc.id });
-        });
-        setUserDocs(docs);
-        setIsLoading(false);
-      }, (error) => {
-          console.error("Firestore error:", error);
-          setIsLoading(false);
+    const q = query(
+      collection(db, collectionName),
+      where('uid', '==', user.uid),
+      orderBy('createdAt', 'desc')
+    );
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const docs: FirestoreDoc[] = [];
+      querySnapshot.forEach((doc) => {
+        docs.push({ ...doc.data(), id: doc.id });
       });
-      return () => unsubscribe();
-    } catch (error) {
-      console.log(error);
+      setUserDocs(docs);
       setIsLoading(false);
-    }
+    }, (error) => {
+        console.error("Firestore error:", error);
+        setIsLoading(false);
+    });
+    return () => unsubscribe();
   }, [collectionName, user?.uid]);
 
   const storeDateToFirestore = async (userId: string, nickName: string, firstName: string) => {

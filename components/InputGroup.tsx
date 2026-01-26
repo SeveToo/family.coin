@@ -1,5 +1,5 @@
 import React from 'react';
-import { UseFormRegister, FieldValues, RegisterOptions } from 'react-hook-form';
+import { UseFormRegister, RegisterOptions } from 'react-hook-form';
 
 interface InputGroupProps {
   name: string;
@@ -32,10 +32,8 @@ const InputGroup = ({
         min={rules?.min ? (typeof rules.min === 'object' ? rules.min.value : rules.min) : undefined}
         max={rules?.max ? (typeof rules.max === 'object' ? rules.max.value : rules.max) : undefined}
         step="0.01"
-        // placeholder="email"
         className="input input-bordered"
         onChange={(e) => {
-          register(name).onChange(e); // Ensure react-hook-form's onChange is called
           if (onChange) onChange(e);
         }}
       />

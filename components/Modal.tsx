@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import InputGroup from './InputGroup';
 import useCoinTransfer from '@/lib/hooks/useCoinTransfer';
 import useUserBalance from '@/lib/hooks/useUserBalance';
@@ -13,20 +13,17 @@ interface ModalProps {
 }
 
 const Modal = ({ id, nick }: ModalProps) => {
-  const [amount, setAmount] = useState<number | string>(0);
+  
   const { transferCoins, isTransferring, error } = useCoinTransfer();
   const userBalance = useUserBalance(); // Fixed: useUserBalance doesn't take ID in the new hook, it uses auth context
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm<{ amount: number }>();
   const modalRef = useRef<HTMLDialogElement>(null);
 
-  const handleFormSubmit = async (data: any) => {
+  const handleFormSubmit = (data: { amount: number }) => {
     if (isTransferring) {
       return;
     }
-    console.log(id, data.amount);
-    // Przekazujemy id odbiorcy i ilość do hooka transferu
-    await transferCoins(id, data.amount);
-    closeModal();
+    transferCoins(id, data.amount).finally(() => closeModal());
   };
 
   const openModal = () => {
@@ -43,10 +40,7 @@ const Modal = ({ id, nick }: ModalProps) => {
     }
   };
 
-  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.value);
-    setAmount(event.target.value);
-  };
+  
 
   return (
     <>
@@ -69,7 +63,6 @@ const Modal = ({ id, nick }: ModalProps) => {
               type="number"
               label="Ilość family coinów 👑"
               register={register}
-              onChange={handleAmountChange}
               errorMsg={error || ''}
               rules={{
                 required: 'Podaj kwotę',
