@@ -43,3 +43,7 @@ next-env.d.ts
 /familycoin-old/*
 /familycoin-old
 familycoin-old
+
+# Agent & Tooling
+.opencode
+AGENTS.md

@@ -1,0 +1,22 @@
+'use client';
+
+import { useAuth } from '@/lib/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+export default function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/logowanie');
+    }
+  }, [user, isLoading, router]);
+
+  if (isLoading || !user) {
+    return <div>Loading...</div>;
+  }
+
+  return <>{children}</>;
+}
