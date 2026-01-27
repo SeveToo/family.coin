@@ -11,15 +11,25 @@ interface UserProps {
 
 const User = ({ nick = 'Nazwa', firstname = 'Imię', balance = 0, id }: UserProps) => {
   return (
-    <div className="flex justify-between items-center p-4 rounded-2xl bg-base-200 w-full">
-      <div className="flex items-center gap-4 pl-4 min-w-0 flex-1 overflow-hidden">
-        <div className="text-primary font-bold truncate max-w-[100px]">{firstname}</div>
-        <div className="truncate flex-1 min-w-0">{nick}</div>
-        <div className="whitespace-nowrap shrink-0">
-          <span className="text-primary font-bold">{formatBalance(balance)}</span>Æ
+    <div className="flex justify-between items-center p-3 sm:p-4 rounded-2xl bg-base-200 w-full gap-3 shadow-sm border border-white/5">
+      <div className="flex flex-col min-w-0 flex-1">
+        <div className="text-primary font-black text-sm sm:text-base leading-tight truncate">
+          {firstname}
+        </div>
+        <div className="text-[10px] sm:text-xs opacity-60 font-medium truncate">
+          @{nick}
         </div>
       </div>
-      <div className="shrink-0 ml-2">
+      
+      <div className="flex items-center gap-3 shrink-0">
+        <div className="text-right">
+          <div className="text-primary font-black text-sm sm:text-base">
+            {formatBalance(balance)}
+          </div>
+          <div className="text-[10px] sm:text-xs opacity-40 font-bold uppercase leading-none">
+            Monet 🪙
+          </div>
+        </div>
         <Modal id={id} nick={nick} />
       </div>
     </div>

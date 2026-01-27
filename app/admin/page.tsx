@@ -35,10 +35,9 @@ export default function AdminPage() {
 
   return (
     <AdminRoute>
-      <div className="p-4 sm:p-10 max-w-5xl mx-auto pb-32">
+      <div className="p-4 sm:p-10 max-w-5xl mx-auto pb-32 ">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-black">Panel Admina ⚙️</h1>
-          <div className="badge badge-outline">Tryb Edycji</div>
+          <h1 className="text-3xl font-black">Panel Admina</h1>
         </div>
         
         {message && (
@@ -49,7 +48,7 @@ export default function AdminPage() {
         )}
 
         {/* Admin Submenu */}
-        <div className="tabs tabs-boxed mb-8 bg-base-300 p-1 flex-wrap h-auto">
+        <div className="tabs tabs-boxed mb-8 bg-base-300 p-1 flex-wrap h-auto rounded-2xl">
           <button 
             className={`tab flex-1 min-w-[100px] h-12 font-bold ${activeTab === 'approvals' ? 'tab-active' : ''}`}
             onClick={() => setActiveTab('approvals')}
