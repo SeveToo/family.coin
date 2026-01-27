@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Family Coin 💰
+
+Avel-designed family management app built with Next.js & Firebase. Track common tasks, earn 'Family Coins', and spend them in a customizable family shop. Features real-time updates, child-friendly UI with emoji pickers, and an admin panel for parents to manage rewards and approvals. Modern, fast, and mobile-friendly.
 
 ## Getting Started
 

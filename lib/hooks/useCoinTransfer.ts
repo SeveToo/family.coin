@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { db } from '@/lib/firebase/config';
 import { useAuth } from '@/lib/contexts/AuthContext';
-import { doc, getDoc, runTransaction } from 'firebase/firestore';
+import { doc, getDoc, runTransaction, collection } from 'firebase/firestore';
 
 const useCoinTransfer = () => {
   const { user } = useAuth();
@@ -93,6 +93,26 @@ const useCoinTransfer = () => {
           });
           transaction.update(toUserRef, {
             balance: Number(toUserData.balance) + Number(numericAmount),
+          });
+
+          // Log transaction for sender
+          const senderTxRef = doc(collection(db, 'transactions'));
+          transaction.set(senderTxRef, {
+            userId: user.uid,
+            amount: -numericAmount,
+            type: 'transfer',
+            description: `Przelew do ${toUserData.nickName || 'użytkownika'}`,
+            createdAt: Date.now() // serverTimestamp() can be tricky in array unions but fine here. Using Date.now() for consistency with type.
+          });
+
+          // Log transaction for receiver
+          const receiverTxRef = doc(collection(db, 'transactions'));
+          transaction.set(receiverTxRef, {
+            userId: toUserId,
+            amount: numericAmount,
+            type: 'transfer',
+            description: `Przelew od ${fromUserData.nickName || 'użytkownika'}`,
+            createdAt: Date.now()
           });
         } else {
           throw new Error('Insufficient funds');
