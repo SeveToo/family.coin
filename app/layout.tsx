@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: 'Family Coin Application',
 }
 
+import ClientLayout from '@/components/ClientLayout'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,7 +30,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-base-100 text-base-content min-h-screen`}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <ClientLayout>
+            {children}
+          </ClientLayout>
+        </AuthProvider>
       </body>
     </html>
   )

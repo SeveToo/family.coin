@@ -17,16 +17,23 @@ import {
   deleteDoc,
   onSnapshot,
   orderBy,
-  runTransaction
+  runTransaction,
+  limit
 } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
 import { useState, useEffect } from 'react';
 import { formatBalance } from '@/lib/utils';
 import Nav from '@/components/Nav';
-import { Task, ShopItem, AvailableTask, Transaction } from '@/lib/types';
+import { 
+  Task, 
+  ShopItem, 
+  AvailableTask, 
+  Transaction,
+  Rule 
+} from '@/lib/types';
 import Image from 'next/image';
 
-type AdminTab = 'approvals' | 'shop' | 'tasks' | 'users' | 'police' | 'rules';
+type AdminTab = 'approvals' | 'shop' | 'tasks' | 'users' | 'police' | 'rules' | 'logs';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>('approvals');
@@ -35,7 +42,6 @@ export default function AdminPage() {
 
   return (
     <AdminRoute>
-      <div className="p-4 sm:p-10 max-w-5xl mx-auto pb-32 ">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-black">Panel Admina</h1>
         </div>
@@ -85,6 +91,12 @@ export default function AdminPage() {
           >
             ⚖️ Zasady
           </button>
+          <button 
+            className={`tab flex-1 min-w-[100px] h-12 font-bold ${activeTab === 'logs' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab('logs')}
+          >
+            📜 Logi
+          </button>
         </div>
 
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -96,22 +108,199 @@ export default function AdminPage() {
           )}
 
           {activeTab === 'shop' && <ShopManager setMessage={setMessage} />}
-
           {activeTab === 'tasks' && <AvailableTaskManager setMessage={setMessage} />}
-          
           {activeTab === 'users' && <UsersManager setMessage={setMessage} />}
-
           {activeTab === 'police' && <PoliceManager setMessage={setMessage} />}
-
-          {activeTab === 'rules' && <RulesSection />}
+          {activeTab === 'rules' && <RulesManager setMessage={setMessage} />}
+          {activeTab === 'logs' && <TransactionManager />}
         </div>
-      </div>
-      <Nav />
     </AdminRoute>
   );
 }
 
+// ... existing subcomponents ...
+
 // --- SUBCOMPONENTS ---
+
+const RulesManager = ({ setMessage }: { setMessage: (msg: string) => void }) => {
+  const [rules, setRules] = useState<Rule[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [newRule, setNewRule] = useState<Rule>({ title: '', desc: '', fine: '' });
+
+  useEffect(() => {
+    const q = query(collection(db, 'rules'), orderBy('createdAt', 'asc'));
+    return onSnapshot(q, (snapshot) => {
+      const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Rule));
+      setRules(fetched);
+    });
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await addDoc(collection(db, 'rules'), { ...newRule, createdAt: Date.now() });
+      setMessage(`Dodano zasadę: ${newRule.title}`);
+      setNewRule({ title: '', desc: '', fine: '' });
+    } catch (e: any) { setMessage(e.message); } finally { setLoading(false); }
+  };
+
+  const removeRule = async (id: string) => {
+    if (!confirm('Usunąć tę zasadę?')) return;
+    try {
+      await deleteDoc(doc(db, 'rules', id));
+      setMessage('Zasada usunięta.');
+    } catch (e: any) { setMessage(e.message); }
+  };
+
+  const seedRules = async () => {
+    const defaultRules = [
+      { title: "Bądź miły", desc: "Zakaz wyzywania, przedrzeźniania i dokuczania.", fine: "1-5 FC" },
+      { title: "Szczerość", desc: "Zgłaszaj zadania tylko wtedy, gdy faktycznie je wykonałeś.", fine: "Cofnięcie nagrody + 10 FC mandatu" },
+      { title: "Zasady Sklepu", desc: "Nagrody ze sklepu realizujemy po uzgodnieniu z rodzicami.", fine: "-" },
+      { title: "Czystość", desc: "Dbaj o porządek w pokoju i częściach wspólnych.", fine: "Konfiskata 2 FC" }
+    ];
+    
+    setLoading(true);
+    try {
+      const batch = writeBatch(db);
+      defaultRules.forEach(rule => {
+        const newDocRef = doc(collection(db, 'rules'));
+        batch.set(newDocRef, { ...rule, createdAt: Date.now() });
+      });
+      await batch.commit();
+      setMessage('Przywrócono domyślne zasady!');
+    } catch (e: any) { setMessage(e.message); } finally { setLoading(false); }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="card bg-base-200 shadow-xl border-t-4 border-warning">
+        <div className="card-body">
+          <div className="flex justify-between items-center">
+            <h2 className="card-title">Dodaj Zasadę ⚖️</h2>
+            {rules.length === 0 && (
+              <button onClick={seedRules} className="btn btn-xs btn-outline btn-warning">Pobierz gotowe zasady 📥</button>
+            )}
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+            <input className="input input-bordered w-full font-bold" placeholder="Tytuł zasady..." value={newRule.title} onChange={e => setNewRule({...newRule, title: e.target.value})} required />
+            <textarea className="textarea textarea-bordered w-full" placeholder="Opis zasady..." value={newRule.desc} onChange={e => setNewRule({...newRule, desc: e.target.value})} required />
+            <div className="flex gap-4 items-center">
+              <input className="input input-bordered flex-1" placeholder="Kara (np. 5 FC or -)" value={newRule.fine} onChange={e => setNewRule({...newRule, fine: e.target.value})} />
+              <button type="submit" className="btn btn-warning px-10" disabled={loading}>Dodaj</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div className="grid gap-3">
+        {rules.map(r => (
+          <div key={r.id} className="card bg-base-100 shadow-md p-4 flex-row justify-between items-center border border-base-300">
+            <div>
+              <div className="font-black">{r.title}</div>
+              <div className="text-xs opacity-60">{r.desc}</div>
+              {r.fine && <div className="text-[10px] font-bold text-warning uppercase">Kara: {r.fine}</div>}
+            </div>
+            <button onClick={() => removeRule(r.id!)} className="btn btn-ghost btn-xs text-error">Usuń</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const TransactionManager = () => {
+  const [logs, setLogs] = useState<Transaction[]>([]);
+  const [users, setUsers] = useState<Record<string, string>>({});
+  const [filterUser, setFilterUser] = useState<string>('all');
+  const [filterType, setFilterType] = useState<string>('all');
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const q = query(collection(db, 'users'));
+      const snap = await getDocs(q);
+      const userMap: Record<string, string> = {};
+      snap.forEach(doc => userMap[doc.id] = doc.data().nickName);
+      setUsers(userMap);
+    };
+    fetchUsers();
+
+    const q = query(collection(db, 'transactions'), orderBy('createdAt', 'desc'), limit(100));
+    const unsub = onSnapshot(q, (snapshot) => {
+      const fetchedLogs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Transaction));
+      setLogs(fetchedLogs);
+    });
+    return () => unsub();
+  }, []);
+
+  const filteredLogs = logs.filter(log => {
+    const matchUser = filterUser === 'all' || log.userId === filterUser;
+    const matchType = filterType === 'all' || log.type === filterType;
+    return matchUser && matchType;
+  });
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <h2 className="text-xl font-bold">Logi (Top 100) 📜</h2>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <select className="select select-sm select-bordered flex-1" value={filterUser} onChange={e => setFilterUser(e.target.value)}>
+            <option value="all">Wszyscy</option>
+            {Object.entries(users).map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+          </select>
+          <select className="select select-sm select-bordered flex-1" value={filterType} onChange={e => setFilterType(e.target.value)}>
+            <option value="all">Wszystkie typy</option>
+            <option value="shop">Sklep</option>
+            <option value="earn">Praca</option>
+            <option value="fine">Mandaty</option>
+            <option value="transfer">Przelewy</option>
+          </select>
+        </div>
+      </div>
+      
+      <div className="overflow-x-auto bg-base-100 rounded-2xl shadow-xl border border-base-300">
+        <table className="table table-zebra w-full table-xs">
+          <thead>
+            <tr className="bg-base-200 uppercase text-[10px]">
+              <th>Data</th>
+              <th>Kto</th>
+              <th>Typ</th>
+              <th>Opis</th>
+              <th>Kwota</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredLogs.map(log => (
+              <tr key={log.id} className="hover">
+                <td className="text-[9px] opacity-40">
+                  {new Date(log.createdAt).toLocaleDateString()} {new Date(log.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                </td>
+                <td className="font-bold text-xs">
+                  {users[log.userId] || 'Ktoś'}
+                </td>
+                <td>
+                  <span className={`badge badge-xs font-bold ${
+                    log.type === 'shop' ? 'badge-primary' : 
+                    log.type === 'fine' ? 'badge-error' : 
+                    log.type === 'earn' ? 'badge-success' : 
+                    'badge-ghost'
+                  }`}>
+                    {log.type.slice(0,4)}
+                  </span>
+                </td>
+                <td className="text-[10px] max-w-[120px] truncate">{log.description}</td>
+                <td className={`font-black text-xs ${log.amount < 0 ? 'text-error' : 'text-success'}`}>
+                  {log.amount > 0 ? '+' : ''}{log.amount}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
 
 const ShopManager = ({ setMessage }: { setMessage: (msg: string) => void }) => {
   const [items, setItems] = useState<ShopItem[]>([]);

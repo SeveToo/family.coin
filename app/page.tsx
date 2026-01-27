@@ -14,35 +14,32 @@ const Home = () => {
 
   return (
     <PrivateRoute>
-      <div className="min-h-screen w-full max-w-xl flex mx-auto flex-col items-center py-5 px-4 pb-32">
-        <div className="w-full text-center mb-6">
-          <h2 className="text-2xl font-black">Witaj, {currentUserDoc?.nickName}! 👋</h2>
-        </div>
-
-        <Wallet />
-
-        <div className="tabs tabs-boxed w-full mt-6 mb-6">
-          <button 
-            className={`tab flex-1 ${activeTab === 'users' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('users')}
-          >
-            Przelej 💸
-          </button>
-          <button 
-            className={`tab flex-1 ${activeTab === 'history' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('history')}
-          >
-            Historia 📜
-          </button>
-        </div>
-
-        {activeTab === 'users' ? (
-          <Users />
-        ) : (
-          <TransactionHistory />
-        )}
+      <div className="w-full text-center mb-6">
+        <h2 className="text-2xl font-black">Witaj, {currentUserDoc?.nickName}! 👋</h2>
       </div>
-      <Nav />
+
+      <Wallet />
+
+      <div className="tabs tabs-boxed w-full mt-6 mb-6">
+        <button 
+          className={`tab flex-1 ${activeTab === 'users' ? 'tab-active' : ''}`}
+          onClick={() => setActiveTab('users')}
+        >
+          Przelej 💸
+        </button>
+        <button 
+          className={`tab flex-1 ${activeTab === 'history' ? 'tab-active' : ''}`}
+          onClick={() => setActiveTab('history')}
+        >
+          Historia 📜
+        </button>
+      </div>
+
+      {activeTab === 'users' ? (
+        <Users />
+      ) : (
+        <TransactionHistory />
+      )}
     </PrivateRoute>
   );
 };

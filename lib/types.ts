@@ -35,4 +35,10 @@ export interface AvailableTask {
   icon?: string;
   isDaily?: boolean;
 }
-
+export interface Rule {
+  id?: string;
+  title: string;
+  desc: string;
+  fine: string;
+  createdAt?: number;
+}

@@ -150,7 +150,6 @@ const EarnPage = () => {
 
   return (
     <PrivateRoute>
-      <div className="min-h-screen w-full max-w-xl mx-auto flex flex-col items-center py-5 px-4 pb-32">
         <h1 className="text-3xl font-bold mb-6">Zarabiaj 💰</h1>
 
         <div className="w-full mb-8">
@@ -241,8 +240,6 @@ const EarnPage = () => {
             </div>
           </div>
         )}
-      </div>
-      <Nav />
     </PrivateRoute>
   );
 };

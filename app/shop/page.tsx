@@ -135,7 +135,6 @@ const ShopPage = () => {
 
   return (
     <PrivateRoute>
-      <div className="min-h-screen w-full max-w-xl mx-auto flex flex-col items-center py-5 px-4 pb-32">
         <Wallet />
 
         <div className="flex w-full items-center gap-2 mt-6 mb-6">
@@ -307,8 +306,6 @@ const ShopPage = () => {
         ) : (
           <TransactionHistory type="shop" />
         )}
-      </div>
-      <Nav />
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
