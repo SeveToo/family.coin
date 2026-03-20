@@ -172,7 +172,7 @@ Rozpocznij pracę z kodem w kilku prostych krokach:
 
 1. **Sklonuj repozytorium:**
    ```bash
-   git clone [https://github.com/TwojProfil/family-coin.git](https://github.com/TwojProfil/family-coin.git)
+   git clone https://github.com/SeveToo/family.coin.git
    cd family-coin
    ```
 
